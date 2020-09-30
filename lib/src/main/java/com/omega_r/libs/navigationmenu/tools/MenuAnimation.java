@@ -47,11 +47,13 @@ public class MenuAnimation extends Animation {
     }
 
     private float getDirection(){
-        if (Locale.getDefault().getLanguage().equals("ar")){
-            return mTranslationCoefAR;
-        }else {
-            return mTranslationCoefEn;
-        }
+//        if (Locale.getDefault().getLanguage().equals("ar")){
+//            return mTranslationCoefAR;
+//        }else {
+//            return mTranslationCoefEn;
+//        }
+
+        return mTranslationCoefAR;
     }
 
     public MenuAnimation show() {

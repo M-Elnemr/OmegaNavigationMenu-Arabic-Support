@@ -33,13 +33,12 @@ public class MainActivity extends AppCompatActivity implements
         getBaseContext().getResources().updateConfiguration(config,
                 getBaseContext().getResources().getDisplayMetrics());
 
-        mContainerView = new ContentMenuLayout(getApplicationContext());
-
         mContainerView = findViewById(R.id.layout_container);
         findViewById(R.id.textview_menu_main).setOnClickListener(this);
         findViewById(R.id.textview_menu_news).setOnClickListener(this);
         findViewById(R.id.textview_menu_contacts).setOnClickListener(this);
 
+        mContainerView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         if (savedInstanceState == null) showPage(mMainFragment);
         mContainerView.setOnProgressMenuChangedListener(this);
     }
