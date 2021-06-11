@@ -6,8 +6,6 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -69,12 +67,11 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
             public void run() {
                 if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                     mMinRawX = getWidth() - 42;
-                    Log.d("hjg", "run: "+mMinRawX);
                 } else {
                     mMinRawX = 42f;
                 }
             }
-        },500);
+        }, 1000);
 
     }
 
@@ -108,8 +105,6 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-                        Log.d("TAG", "rooooooooooooow: " + mMinRawX);
-                        Log.d("TAG", "rooooooooooooow: " + ev.getRawX());
                         if (ev.getRawX() >= mMinRawX) {
                             actionDown(ev);
                         }
@@ -123,11 +118,9 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
                 case MotionEvent.ACTION_MOVE:
                     if (mMotion) {
                         mPercent = (ev.getRawX() - mStartX) / (mHookLayout.getWidth() * COEF_MENU_CONTENT_TRANSLATION);
-                        Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
                         if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                             mPercent = 1 - (mPercent + 1);
                         }
-                        Log.d("TAG", "onDispatchTouchEvent2: " + mPercent);
 
                         if (mPercent > 1) {
                             mPercent = 1;
@@ -136,7 +129,6 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
                         }
 
                         if (mPercent > START_ANIMATION) {
-                            Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
                             mAnimation.applyTo(mPercent);
                         }
 
@@ -169,11 +161,9 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
                 case MotionEvent.ACTION_MOVE:
                     if (mMotion) {
                         mPercent = 1 + (ev.getRawX() - mStartX) / (mHookLayout.getWidth() * COEF_MENU_CONTENT_TRANSLATION);
-                        Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
                         if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
                             mPercent = 1 - (mPercent - 1);
                         }
-                        Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
                         if (mPercent > 1) {
                             mPercent = 1;
                         } else if (mPercent < 0) {
