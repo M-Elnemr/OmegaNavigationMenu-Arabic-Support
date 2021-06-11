@@ -2,10 +2,13 @@ package com.omega_r.libs.navigationmenu;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 
@@ -31,6 +34,7 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
     private boolean mMotion;
 
     private MenuAnimation mAnimation;
+    private Configuration config;
     private float mMinRawX;
     private float mPercent;
     @Nullable
@@ -56,7 +60,13 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
         mHookLayout = findViewById(R.id.layout_hook);
         mAnimation = new MenuAnimation(this, COEF_MENU_CONTENT_SCALE);
         mAnimation.setOnAnimationTimeChangedListener(this);
-        mMinRawX = getResources().getDimension(R.dimen.menu_min_raw_x);
+        config = getResources().getConfiguration();
+
+        if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+            mMinRawX = 600f;
+        } else {
+            mMinRawX = 64f;
+        }
     }
 
     @Override
@@ -65,32 +75,51 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
         return true;
     }
 
+    public void actionDown(MotionEvent ev) {
+        mAnimation.show();
+        mStartX = ev.getRawX();
+        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0.f, START_ANIMATION);
+        valueAnimator.setInterpolator(new DecelerateInterpolator());
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                if (mPercent < START_ANIMATION && mMotion) {
+                    mAnimation.applyTo((Float) animation.getAnimatedValue());
+                }
+            }
+        });
+        valueAnimator.start();
+
+        mMotion = true;
+        return;
+    }
+
     public void onDispatchTouchEvent(MotionEvent ev) {
         if (!mShowFlag) {
             switch (ev.getAction()) {
                 case MotionEvent.ACTION_DOWN:
-                    if (ev.getRawX() <= mMinRawX) {
-                        mAnimation.show();
-                        mStartX = ev.getRawX();
-                        ValueAnimator valueAnimator = ValueAnimator.ofFloat(0.f, START_ANIMATION);
-                        valueAnimator.setInterpolator(new DecelerateInterpolator());
-                        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                            @Override
-                            public void onAnimationUpdate(ValueAnimator animation) {
-                                if (mPercent < START_ANIMATION && mMotion) {
-                                    mAnimation.applyTo((Float) animation.getAnimatedValue());
-                                }
-                            }
-                        });
-                        valueAnimator.start();
-
-                        mMotion = true;
-                        return;
+                    if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                        Log.d("TAG", "rooooooooooooow: " + mMinRawX);
+                        Log.d("TAG", "rooooooooooooow: " + ev.getRawX());
+                        if (ev.getRawX() >= mMinRawX) {
+                            actionDown(ev);
+                        }
+                    } else {
+                        if (ev.getRawX() <= mMinRawX) {
+                            actionDown(ev);
+                        }
                     }
+
                     break;
                 case MotionEvent.ACTION_MOVE:
                     if (mMotion) {
                         mPercent = (ev.getRawX() - mStartX) / (mHookLayout.getWidth() * COEF_MENU_CONTENT_TRANSLATION);
+                        Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
+                        if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                            mPercent = 1 - (mPercent + 1);
+                        }
+                        Log.d("TAG", "onDispatchTouchEvent2: " + mPercent);
+
                         if (mPercent > 1) {
                             mPercent = 1;
                         } else if (mPercent < 0) {
@@ -98,6 +127,7 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
                         }
 
                         if (mPercent > START_ANIMATION) {
+                            Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
                             mAnimation.applyTo(mPercent);
                         }
 
@@ -130,6 +160,11 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
                 case MotionEvent.ACTION_MOVE:
                     if (mMotion) {
                         mPercent = 1 + (ev.getRawX() - mStartX) / (mHookLayout.getWidth() * COEF_MENU_CONTENT_TRANSLATION);
+                        Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
+                        if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                            mPercent = 1 - (mPercent - 1);
+                        }
+                        Log.d("TAG", "onDispatchTouchEvent: " + mPercent);
                         if (mPercent > 1) {
                             mPercent = 1;
                         } else if (mPercent < 0) {
@@ -229,6 +264,7 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
     }
 
     private void onLeftSwipe() {
+//        showMenu();
 
     }
 

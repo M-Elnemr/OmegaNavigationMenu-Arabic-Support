@@ -1,5 +1,6 @@
 package com.omega_r.libs.navigationmenu.tools;
 
+import android.content.res.Configuration;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.util.Log;
@@ -47,13 +48,17 @@ public class MenuAnimation extends Animation {
     }
 
     private float getDirection(){
+        Configuration config = mContentView.getResources().getConfiguration();
+        if(config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+            return mTranslationCoefAR;
+        }else {
+            return mTranslationCoefEn;
+        }
 //        if (Locale.getDefault().getLanguage().equals("ar")){
 //            return mTranslationCoefAR;
 //        }else {
 //            return mTranslationCoefEn;
 //        }
-
-        return mTranslationCoefAR;
     }
 
     public MenuAnimation show() {
@@ -91,6 +96,13 @@ public class MenuAnimation extends Animation {
             show();
             mInit = false;
         }
+
+        Log.d("TAG", "apply1: "+mTranslateXStart );
+        Log.d("TAG", "apply2: "+mTranslateXDiff );
+        Log.d("TAG", "apply3: "+interpolatedTime );
+//        Log.d("TAG", "apply1: "+(mTranslateXStart + mTranslateXDiff * interpolatedTime));
+//        Log.d("TAG", "apply2: "+(mScaleXStart + mScaleXDiff * interpolatedTime));
+//        Log.d("TAG", "apply3: "+(mScaleYStart + mScaleYDiff * interpolatedTime));
 
         mContentView.setX(mTranslateXStart + mTranslateXDiff * interpolatedTime);
         mContentView.setScaleX(mScaleXStart + mScaleXDiff * interpolatedTime);
