@@ -3,8 +3,10 @@ package com.omega_r.libs.navigationmenu;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -62,11 +64,18 @@ public class ContentMenuLayout extends FrameLayout implements GestureDetector.On
         mAnimation.setOnAnimationTimeChangedListener(this);
         config = getResources().getConfiguration();
 
-        if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
-            mMinRawX = 600f;
-        } else {
-            mMinRawX = 64f;
-        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (config.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+                    mMinRawX = getWidth() - 42;
+                    Log.d("hjg", "run: "+mMinRawX);
+                } else {
+                    mMinRawX = 42f;
+                }
+            }
+        },500);
+
     }
 
     @Override
